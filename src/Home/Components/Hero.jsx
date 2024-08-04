@@ -25,7 +25,7 @@ const Hero = () => {
         </div>
 
         <div className="flex flex-row justify-between items-center w-full mb-8">
-          <h1 className="flex-1 font-poppins font-bold ss:text-[75px] text-[70px] gold-text ss:leading-[100.8px] leading-[70px]">
+          <h1 className="flex-1 font-poppins font-bold ss:text-[75px] text-[40px] sm:text-[60px] md:text-[70px] gold-text ss:leading-[100.8px] leading-[50px] sm:leading-[70px] md:leading-[70px]">
             Tersedia untuk <br className="sm:block hidden" />{" "}
             <span className="gold-text">Melindungi</span>{" "}
           </h1>
@@ -45,7 +45,7 @@ const Hero = () => {
       </div>
 
       <div className={`flex-1 flex ${styles.flexCenter} md:my-0 my-10 relative`}>
-        <img src={test} alt="billing" className="w-[88%] h-[75%] relative z-[5]" />
+        <img src={test} alt="billing" className="w-[88%] h-auto md:h-[75%] relative z-[5]" />
 
         {/* gradient start */}
         <div className="absolute z-[0] w-[40%] h-[10%] top-0 pink__gradient" />
@@ -54,7 +54,7 @@ const Hero = () => {
         {/* gradient end */}
       </div>
 
-      <div className={`ss:hidden ${styles.flexCenter}`}>
+      <div className={`ss:hidden ${styles.flexCenter} mt-10`}>
         <GetStarted />
       </div>
 

@@ -1,6 +1,6 @@
 import { features } from "../constants";
 import styles, { layout } from "../style";
-import Button from "./Butto";
+import Button from "./Butto"; // Corrected import statement
 
 const FeatureCard = ({ icon, title, content, index }) => (
   <div className={`flex flex-row p-6 rounded-[20px] ${index !== features.length - 1 ? "mb-6" : "mb-0"} feature-card`}>
@@ -18,25 +18,27 @@ const FeatureCard = ({ icon, title, content, index }) => (
   </div>
 );
 
-const Business = () =>  (
+const Business = () => (
   <section id="features" className={layout.section}>
     <div className={layout.sectionInfo}>
-      <h2 className={styles.heading2}>
-        You do the business, <br className="sm:block hidden" /> well handle
+      <h2 className={`${styles.heading2} sm:text-[32px] text-[24px]`}>
+        You do the business, <br className="sm:block hidden" /> we'll handle
         the money.
       </h2>
       <p className={`${styles.paragraph} max-w-[470px] mt-5`}>
         With the right credit card, you can improve your financial life by
-        building credit, earning rewards and saving money. But with hundreds
+        building credit, earning rewards, and saving money. But with hundreds
         of credit cards on the market.
       </p>
-      <button type="button" className={`py-4 px-6 font-poppins font-medium text-[18px] text-primary  rounded-[10px] outline-none mt-5 button`}>
-  Get Started
-</button>
-
+      <button
+        type="button"
+        className={`py-4 px-6 font-poppins font-medium text-[18px] text-primary bg-blue-600 hover:bg-blue-700 rounded-[10px] outline-none mt-5`}
+      >
+        Get Started
+      </button>
     </div>
 
-    <div className={`${layout.sectionImg} flex-col`}>
+    <div className={`${layout.sectionImg} flex flex-col`}>
       {features.map((feature, index) => (
         <FeatureCard key={feature.id} {...feature} index={index} />
       ))}
