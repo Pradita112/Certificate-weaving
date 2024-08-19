@@ -1,27 +1,25 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom"; // Import Link
-
+import { Link } from "react-router-dom";
 
 const Hero = ({ images, texts }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(false); // State untuk mengontrol animasi
+  const [isAnimating, setIsAnimating] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex(prevIndex => (prevIndex + 1) % images.length);
-    }, 3000); // Change image every 3 seconds
+    }, 3000);
 
     return () => clearInterval(interval);
   }, [images.length]);
 
-  // Handler untuk mengontrol animasi saat tombol diklik
   const handleClick = () => {
     setIsAnimating(true);
-    setTimeout(() => setIsAnimating(false), 500); // Ubah waktu sesuai durasi animasi CSS
+    setTimeout(() => setIsAnimating(false), 500);
   };
 
   return (
-    <div className={`relative w-full h-80 overflow-hidden ${isAnimating ? "fade-out" : ""}`}> {/* Tambahkan kelas fade-out saat animasi aktif */}
+    <div className={`relative w-full h-80 overflow-hidden ${isAnimating ? "fade-out" : ""}`}>
       {images.map((image, index) => (
         <div
           key={index}
@@ -42,7 +40,6 @@ const Hero = ({ images, texts }) => {
           </Link>
         </div>
       </div>
-      <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 text-center"></div>
     </div>
   );
 };
