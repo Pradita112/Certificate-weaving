@@ -21,6 +21,18 @@ const Marketplace = () => {
   ]);
   const [loading, setLoading] = useState(true); // Add loading state
 
+  const fetchMetadata = async (url, retries = 3) => {
+    try {
+      return await axios.get(url, { timeout: 10000 });
+    } catch (error) {
+      if (retries > 0) {
+        console.log(`Retrying fetch for ${url}, attempts left: ${retries}`);
+        return fetchMetadata(url, retries - 1);
+      }
+      throw error;
+    }
+  };
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -41,7 +53,7 @@ const Marketplace = () => {
         const items = await Promise.all(transaction.map(async i => {
           let tokenURI = await contract.tokenURI(i.tokenId);
           tokenURI = GetIpfsUrlFromPinata(tokenURI);
-          const meta = await axios.get(tokenURI);
+          const meta = await fetchMetadata(tokenURI);
           const price = utils.formatUnits(i.price.toString(), 'ether');
           return {
             price,
