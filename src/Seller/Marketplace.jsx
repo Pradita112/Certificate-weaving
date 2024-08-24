@@ -21,15 +21,17 @@ const Marketplace = () => {
   ]);
   const [loading, setLoading] = useState(true); // Add loading state
 
+  // Function to fetch metadata with retries
   const fetchMetadata = async (url, retries = 3) => {
     try {
-      return await axios.get(url, { timeout: 10000 });
+      const response = await axios.get(url, { timeout: 10000 });
+      return response.data; // Return only the data part of response
     } catch (error) {
       if (retries > 0) {
         console.log(`Retrying fetch for ${url}, attempts left: ${retries}`);
         return fetchMetadata(url, retries - 1);
       }
-      throw error;
+      throw new Error(`Failed to fetch metadata from ${url}`);
     }
   };
 
@@ -60,9 +62,9 @@ const Marketplace = () => {
             tokenId: i.tokenId.toNumber(),
             seller: i.seller,
             owner: i.owner,
-            image: meta.data.image,
-            name: meta.data.name,
-            description: meta.data.description,
+            image: meta.image,
+            name: meta.name,
+            description: meta.description,
           };
         }));
 
