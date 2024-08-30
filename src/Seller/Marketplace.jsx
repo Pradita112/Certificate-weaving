@@ -13,24 +13,44 @@ const Marketplace = () => {
   const [dataFetched, setDataFetched] = useState(false);
   const [images, setImages] = useState([]);
   const [texts, setTexts] = useState([
-    "Check out today's hot NFT!",
-    "Discover unique digital assets!",
-    "Own a piece of digital art!",
-    "Explore the NFT marketplace!",
-    "Find your next digital collectible!"
+    "Cek NFT terpopuler hari ini!",
+    "Temukan aset digital unik!",
+    "Miliki karya seni digital!",
+    "Jelajahi pasar NFT!",
+    "Temukan koleksi digital berikutnya!"
   ]);
-  const [loading, setLoading] = useState(true); // Add loading state
+  const [loading, setLoading] = useState(true);
 
-  // Function to fetch metadata with retries
-  const fetchMetadata = async (url, retries = 3) => {
+  // Function to fetch metadata with retries and caching
+  const fetchMetadata = async (url, retries = 3, delay = 1000) => {
+    const cacheKey = `nft-meta-${url}`; // Unique cache key based on URL
+    const cachedData = localStorage.getItem(cacheKey);
+
+    if (cachedData) {
+      console.log(`Using cached data for ${url}`);
+      return JSON.parse(cachedData);
+    }
+
     try {
       const response = await axios.get(url, { timeout: 10000 });
-      return response.data; // Return only the data part of response
+      const data = response.data;
+
+      // Store the data in cache
+      localStorage.setItem(cacheKey, JSON.stringify(data));
+
+      return data;
     } catch (error) {
       if (retries > 0) {
         console.log(`Retrying fetch for ${url}, attempts left: ${retries}`);
-        return fetchMetadata(url, retries - 1);
+        await new Promise((resolve) => setTimeout(resolve, delay)); // Wait before retrying
+        return fetchMetadata(url, retries - 1, delay * 2); // Exponential backoff
       }
+
+      if (cachedData) {
+        console.log(`Returning stale cached data for ${url} due to fetch failure`);
+        return JSON.parse(cachedData); // Return cached data even if it's stale
+      }
+
       throw new Error(`Failed to fetch metadata from ${url}`);
     }
   };
@@ -50,7 +70,7 @@ const Marketplace = () => {
         const contract = new Contract(MarketplaceJSON.address, MarketplaceJSON.abi, signer);
         const transaction = await contract.getAllNFTs();
 
-        console.log("Fetched NFTs:", transaction); // Debugging
+        console.log("Fetched NFTs:", transaction);
 
         const items = await Promise.all(transaction.map(async i => {
           let tokenURI = await contract.tokenURI(i.tokenId);
@@ -68,10 +88,10 @@ const Marketplace = () => {
           };
         }));
 
-        console.log("NFT Items:", items); // Debugging
+        console.log("NFT Items:", items);
 
         setNFTs(items);
-        setImages(items.map(item => item.image)); // Extracting images for slideshow
+        setImages(items.map(item => item.image));
         setDataFetched(true);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -97,7 +117,7 @@ const Marketplace = () => {
           <div className={`${styles.paddingX} ${styles.flexCenter}`}>
             <div className={`${styles.boxWidth}`}>
               <Navbar />
-              <Hero images={images} texts={texts} /> {/* Add Hero component here */}
+              <Hero images={images} texts={texts} />
             </div>
           </div>
           <div className={`bg-primary ${styles.flexStart} mt-[-50px]`}>
@@ -112,7 +132,7 @@ const Marketplace = () => {
 
                   <div className="flex flex-row justify-between items-center w-full mb-8">
                     <h1 className="flex-1 font-poppins font-bold ss:text-[48px] text-[40px] text-white ss:leading-[76.8px] leading-[66.8px]">
-                      Items in your <span className="gold-text">Cart</span>
+                      Karya hari <span className="gold-text">Ini</span>
                     </h1>
                   </div>
 

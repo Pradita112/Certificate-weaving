@@ -169,34 +169,34 @@ export default function SellNFT() {
                 </div>
             )}
             <div className="bg-white shadow-lg rounded-lg p-8 max-w-lg w-full">
-                <h3 className="text-center font-bold text-2xl text-black mb-6">Upload your NFT to the marketplace</h3>
+                <h3 className="text-center font-bold text-2xl text-black mb-6">Unggah Karya mu Sekarang juga</h3>
                 <form>
                     <div className="mb-4">
-                        <label className="block text-black text-sm font-bold mb-2" htmlFor="name">NFT Name</label>
+                        <label className="block text-black text-sm font-bold mb-2" htmlFor="name">Nama Karya</label>
                         <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="name" type="text" placeholder="Axie#4563" onChange={e => updateFormParams({ ...formParams, name: e.target.value })} value={formParams.name} />
                     </div>
                     <div className="mb-4">
-                        <label className="block text-black text-sm font-bold mb-2" htmlFor="description">NFT Description</label>
+                        <label className="block text-black text-sm font-bold mb-2" htmlFor="description">Deskripsi Karya</label>
                         <textarea className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" cols="40" rows="5" id="description" placeholder="Axie Infinity Collection" value={formParams.description} onChange={e => updateFormParams({ ...formParams, description: e.target.value })}></textarea>
                     </div>
                     <div className="mb-4">
-                        <label className="block text-black text-sm font-bold mb-2" htmlFor="price">Price (in Rupiah)</label>
+                        <label className="block text-black text-sm font-bold mb-2" htmlFor="price">Harga (in Rupiah)</label>
                         <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="number" placeholder="Min 40,000 IDR" step="1000" value={formParams.price} onChange={e => updateFormParams({ ...formParams, price: e.target.value })} />
                         <p className="text-sm text-gray-500 mt-2">ETH Equivalent: {formParams.ethPrice} ETH</p>
                     </div>
                     <div className="mb-4">
-                        <label className="block text-black text-sm font-bold mb-2" htmlFor="image">Upload Image (&lt;500 KB)</label>
+                        <label className="block text-black text-sm font-bold mb-2" htmlFor="image">Unggah Gambar (&lt;500 KB)</label>
                         <input type="file" onChange={OnChangeFile} />
                         {fileURL && <img src={fileURL} alt="NFT Preview" className="mt-4 w-32 h-32 object-cover rounded" />}
                     </div>
                     <div className="mb-4">
-                        <label className="block text-black text-sm font-bold mb-2" htmlFor="image2">Upload Second Image (&lt;500 KB)</label>
+                        <label className="block text-black text-sm font-bold mb-2" htmlFor="image2">Unggah Tanda Tangan (&lt;500 KB)</label>
                         <input type="file" onChange={OnChangeSecondFile} />
                         {secondFileURL && <img src={secondFileURL} alt="Second NFT Preview" className="mt-4 w-32 h-32 object-cover rounded" />}
                     </div>
                     <div className="text-red-500 text-center">{message}</div>
                     <button onClick={handleListNFT} className="font-bold mt-6 w-full bg-blue-500 text-white rounded p-2 shadow-lg hover:bg-blue-700 transition duration-300" id="list-button">
-                        List NFT
+                        Unggah Karya
                     </button>
                 </form>
             </div>

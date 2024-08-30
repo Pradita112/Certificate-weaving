@@ -10,6 +10,10 @@ import jsPDF from 'jspdf';
 
 // Function to extract CID from IPFS URL
 function GetCIDFromIPFSURL(ipfsURL) {
+    if (!ipfsURL) {
+        console.error('IPFS URL is undefined or null');
+        return null;
+    }
     const parts = ipfsURL.split("/");
     const cid = parts[parts.length - 1];
     return cid;
@@ -25,42 +29,46 @@ export default function Certificate(props) {
 
     useEffect(() => {
         async function getNFTData(tokenId) {
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-            const signer = provider.getSigner();
-            const addr = await signer.getAddress();
-            let contract = new ethers.Contract(MarketplaceJSON.address, MarketplaceJSON.abi, signer);
-            var tokenURI = await contract.tokenURI(tokenId);
-            const listedToken = await contract.getListedTokenForId(tokenId);
-            tokenURI = GetIpfsUrlFromPinata(tokenURI);
-            let meta = await axios.get(tokenURI);
-            meta = meta.data;
+            try {
+                const provider = new ethers.providers.Web3Provider(window.ethereum);
+                const signer = provider.getSigner();
+                const addr = await signer.getAddress();
+                let contract = new ethers.Contract(MarketplaceJSON.address, MarketplaceJSON.abi, signer);
+                let tokenURI = await contract.tokenURI(tokenId);
+                const listedToken = await contract.getListedTokenForId(tokenId);
+                tokenURI = GetIpfsUrlFromPinata(tokenURI);
+                let meta = await axios.get(tokenURI);
+                meta = meta.data;
 
-            // Extract data
-            const creatorAddress = meta.creatorAddress;
-            const name = meta.name;
-            const description = meta.description;
-            const secondImageCID = GetCIDFromIPFSURL(meta.secondImage);
-            const signature = meta.signature;
+                // Extract data
+                const creatorAddress = meta.creatorAddress || '';
+                const name = meta.name || '';
+                const description = meta.description || '';
+                const secondImageCID = meta.secondImage ? GetCIDFromIPFSURL(meta.secondImage) : '';
+                const signature = meta.signature || '';
 
-            let item = {
-                price: meta.price ? ethers.utils.parseUnits(meta.price, 'ether') : ethers.constants.Zero,
-                tokenId: tokenId,
-                seller: listedToken.seller,
-                owner: listedToken.owner,
-                secondImage: meta.secondImage,
-                image: meta.image,
-                name: name,
-                description: description,
-                ipfsURL: tokenURI,
-                signature: signature,
-                signatureIPFSURL: meta.signatureIPFSURL,
-                creatorAddress: creatorAddress,
-                secondImageCID: secondImageCID
-            };
+                let item = {
+                    price: meta.price ? ethers.utils.parseUnits(meta.price, 'ether') : ethers.constants.Zero,
+                    tokenId: tokenId,
+                    seller: listedToken.seller,
+                    owner: listedToken.owner,
+                    secondImage: meta.secondImage || '',
+                    image: meta.image || '',
+                    name: name,
+                    description: description,
+                    ipfsURL: tokenURI,
+                    signature: signature,
+                    signatureIPFSURL: meta.signatureIPFSURL || '',
+                    creatorAddress: creatorAddress,
+                    secondImageCID: secondImageCID
+                };
 
-            setData(item);
-            setDataFetched(true);
-            setCurrAddress(addr);
+                setData(item);
+                setDataFetched(true);
+                setCurrAddress(addr);
+            } catch (error) {
+                console.error('Error fetching NFT data:', error);
+            }
         }
 
         if (!dataFetched) getNFTData(tokenId);
@@ -73,12 +81,12 @@ export default function Certificate(props) {
         const doc = new jsPDF();
 
         doc.text("CERTIFICATE TO AUTHENTICITY", 105, 15, { align: "center" });
-        doc.text(`FOR THE MAKER OF THIS WORK OF ART: ${data.name}`, 105, 30, { align: "center" });
-        doc.text(`FOR HIS WORK THAT IS: ${data.description}`, 105, 45, { align: "center" });
-        doc.text(`Creator Address: ${data.creatorAddress}`, 20, 60);
-        doc.text(`Signature: ${data.signature}`, 20, 75);
+        doc.text(`FOR THE MAKER OF THIS WORK OF ART: ${data.name || 'Name not available'}`, 105, 30, { align: "center" });
+        doc.text(`FOR HIS WORK THAT IS: ${data.description || 'Description not available'}`, 105, 45, { align: "center" });
+        doc.text(`Creator Address: ${data.creatorAddress || 'Creator address not available'}`, 20, 60);
+        doc.text(`Signature: ${data.signature || 'Signature not available'}`, 20, 75);
         doc.text(`Date: May 1, 2024`, 20, 90);
-        doc.text(`CID: ${data.secondImageCID}`, 20, 105);
+        doc.text(`CID: ${data.secondImageCID || 'CID not available'}`, 20, 105);
 
         if (data.secondImage) {
             const img = new Image();
@@ -88,7 +96,7 @@ export default function Certificate(props) {
                 doc.addImage(img, 'JPEG', 15, 120, 180, 180);
                 doc.save("certificate.pdf");
             };
-            
+
             img.onerror = (error) => {
                 console.error('Error loading image:', error);
             };
@@ -99,33 +107,35 @@ export default function Certificate(props) {
 
     // Create URL for QR code
     const qrCodeUrl = new URL(window.location.origin + "/verify");
-    qrCodeUrl.searchParams.set('creatorAddress', data.creatorAddress);
-    qrCodeUrl.searchParams.set('name', data.name);
-    qrCodeUrl.searchParams.set('description', data.description);
-    qrCodeUrl.searchParams.set('secondImageCID', data.secondImageCID);
-    qrCodeUrl.searchParams.set('signature', data.signature);
+    qrCodeUrl.searchParams.set('creatorAddress', data.creatorAddress || '');
+    qrCodeUrl.searchParams.set('name', data.name || '');
+    qrCodeUrl.searchParams.set('description', data.description || '');
+    qrCodeUrl.searchParams.set('secondImageCID', data.secondImageCID || '');
+    qrCodeUrl.searchParams.set('signature', data.signature || '');
 
     return (
         <div className={styles.certificateWrapper}>
             <div className={styles.certificateContainer}>
                 <div style={{ display: 'flex', justifyContent: 'center' }}>
-                    <img
-                        src={data.image}
-                        alt="NFT"
-                        className={styles.centeredImage}
-                        style={{ width: '200px', height: '300px' }}
-                    />
+                    {data.image && (
+                        <img
+                            src={data.image}
+                            alt="NFT"
+                            className={styles.centeredImage}
+                            style={{ width: '200px', height: '300px' }}
+                        />
+                    )}
                 </div>
 
                 <h1>CERTIFICATE TO AUTHENTICITY</h1>
 
-                <span className={styles.smallText}>FOR THE MAKER OF THIS WORK OF ART </span>
+                <span className={styles.smallText}>FOR THE MAKER OF THIS WORK OF ART</span>
 
-                <p className={styles.primaryItalicText}>{data.name}</p>
+                <p className={styles.primaryItalicText}>{data.name || 'Name not available'}</p>
 
                 <span className={styles.smallText}>FOR HIS WORK THAT IS</span>
 
-                <h2>{data.description}</h2>
+                <h2>{data.description || 'Description not available'}</h2>
 
                 <div className={`${styles.signatureBlock} ${styles.centerContent}`} style={{ marginTop: '20px' }}>
                     {data.secondImage && (
@@ -146,7 +156,7 @@ export default function Certificate(props) {
                         )}
                     </div>
                     <hr className={styles.shortLine} />
-                    <p>CID: {data.secondImageCID}</p>
+                    <p>CID: {data.secondImageCID || 'CID not available'}</p>
                 </div>
 
                 {/* Generate QR Code */}

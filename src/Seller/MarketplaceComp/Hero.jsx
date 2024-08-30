@@ -31,12 +31,12 @@ const Hero = ({ images, texts }) => {
       <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
         <div className="bg-black bg-opacity-70 p-6 rounded-lg text-center">
           <p className="text-white text-4xl font-bold gold-text mb-4">{texts[currentIndex]}</p>
-          <p className="text-white text-xl font-medium mb-8">Create your own unique NFT today and join the digital art revolution!</p>
+          <p className="text-white text-xl font-medium mb-8">Buat Karya unik Mu sekarang dan ikut dalam revolusi karya digital!</p>
           <Link to="/sellnft" className="flex items-center justify-center text-white bg-blue-500 hover:bg-blue-700 font-bold py-3 px-10 rounded">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
             </svg>
-            Create NFT
+            Daftarkan Karya Mu
           </Link>
         </div>
       </div>

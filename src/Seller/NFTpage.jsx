@@ -61,7 +61,7 @@ export default function NFTPage() {
             let contract = new ethers.Contract(MarketplaceJSON.address, MarketplaceJSON.abi, signer);
             const salePrice = ethers.utils.parseUnits(data.price, 'ether');
             updateMessage("Buying the NFT... Please Wait (Up to 5 mins)");
-            
+
             let transaction = await contract.executeSale(tokenId, { value: salePrice });
             await transaction.wait();
 
@@ -94,14 +94,8 @@ export default function NFTPage() {
         fetchCurrentAddress();
     }, []);
 
-    useEffect(() => {
-        console.log("Image URL:", data.image);
-        console.log("Current Address:", currAddress);
-        console.log("Owner Address:", data.owner);
-    }, [data, currAddress]);
-
     return (
-        <div style={{ minHeight: "100vh" }}>
+        <div className="min-h-screen bg-primary">
             <Navbar />
             {loading && (
                 <div className="fixed inset-0 bg-primary bg-opacity-80 flex flex-col justify-center items-center">
@@ -109,41 +103,51 @@ export default function NFTPage() {
                     <div className="mt-4 text-white text-lg">Loading...</div>
                 </div>
             )}
-            <div className="flex ml-20 mt-20">
-                {data.image ? (
-                    <img src={data.image} alt="NFT" className="w-2/5" />
-                ) : (
-                    !loading && <div>Image not available</div> // Handle case where image might not be available
-                )}
-                <div className="text-xl ml-20 space-y-8 text-white shadow-2xl rounded-lg border-2 p-5">
-                    <div>Name: {data.name}</div>
-                    <div>Description: {data.description}</div>
-                    <div>Price: <span>{data.price + " ETH"}</span></div>
-                    <div>Current Owner: <span className="text-sm">{data.owner}</span></div>
-                    <div>Previous Owner: <span className="text-sm">{data.seller}</span></div>
-                    <div>
-                        {currAddress.toLowerCase() === data.owner?.toLowerCase() ? (
-                            <div className="text-emerald-700">You are the owner of this NFT</div>
-                        ) : (
-                            <button
-                                className="enableEthereumButton bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-sm"
-                                onClick={() => buyNFT(tokenId)}
-                            >
-                                Buy this NFT
-                            </button>
-                        )}
-                        <div className="text-green text-center mt-3">{message}</div>
+            <div className="container mx-auto px-4 py-8">
+                <div className="flex flex-col md:flex-row md:space-x-8">
+                    {data.image ? (
+                        <img src={data.image} alt="NFT" className="w-full md:w-1/2 h-auto rounded-lg shadow-lg" />
+                    ) : (
+                        !loading && <div>Image not available</div> // Handle case where image might not be available
+                    )}
+                    <div className="mt-6 md:mt-0 md:w-1/2 text-white">
+                        <h1 className="text-2xl font-bold mb-4">{data.name}</h1>
+                        <p className="mb-4">{data.description}</p>
+                        <div className="mb-4">
+                            <strong>Price:</strong> {data.price} ETH
+                        </div>
+                        <div className="mb-4">
+                            <strong>Current Owner:</strong> <span className="text-sm">{data.owner}</span>
+                        </div>
+                        <div className="mb-4">
+                            <strong>Previous Owner:</strong> <span className="text-sm">{data.seller}</span>
+                        </div>
+                        <div className="mb-4">
+                            {currAddress.toLowerCase() === data.owner?.toLowerCase() ? (
+                                <div className="text-emerald-700">You are the owner of this NFT</div>
+                            ) : (
+                                <button
+                                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                                    onClick={() => buyNFT(tokenId)}
+                                >
+                                    Buy this NFT
+                                </button>
+                            )}
+                            <div className="text-green text-center mt-3">{message}</div>
+                        </div>
+                        <div className="flex flex-col space-y-4 mt-4">
+                            <Link to={`/certificate/${data.tokenId}`}>
+                                <button className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+                                    View Certificate
+                                </button>
+                            </Link>
+                            <Link to={`/veri`}>
+                                <button className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+                                    Verify Cert
+                                </button>
+                            </Link>
+                        </div>
                     </div>
-                    <Link to={`/certificate/${data.tokenId}`}>
-                        <button className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mt-4">
-                            View Certificate
-                        </button>
-                    </Link>
-                    <Link to={`/veri`}>
-                        <button className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mt-4">
-                            Verify Cert
-                        </button>
-                    </Link>
                 </div>
             </div>
         </div>

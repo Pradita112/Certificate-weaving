@@ -1,37 +1,52 @@
 import axios from 'axios';
 
+// API keys (consider using environment variables for production)
 const key = "cb924bc155e5d34fa6ff";
 const secret = "4be758cefc7a581fc99da5ae18f6b0b044ca2b3f9198bf0d50158de62d0910bc";
 
+// Upload JSON data to IPFS
 export const uploadJSONToIPFS = async (JSONBody) => {
     const url = `https://api.pinata.cloud/pinning/pinJSONToIPFS`;
-    // making axios POST request to Pinata ⬇️
-    return axios
-        .post(url, JSONBody, {
+
+    try {
+        const response = await axios.post(url, JSONBody, {
             headers: {
                 pinata_api_key: key,
                 pinata_secret_api_key: secret,
             }
-        })
-        .then(function (response) {
-            return {
-                success: true,
-                pinataURL: "https://gateway.pinata.cloud/ipfs/" + response.data.IpfsHash
-            };
-        })
-        .catch(function (error) {
-            console.log(error);
-            return {
-                success: false,
-                message: error.message,
-            };
         });
+        return {
+            success: true,
+            pinataURL: "https://gateway.pinata.cloud/ipfs/" + response.data.IpfsHash
+        };
+    } catch (error) {
+        console.error("Error uploading JSON to IPFS:", error.response ? error.response.data : error.message);
+        return {
+            success: false,
+            message: error.response ? error.response.data : error.message,
+        };
+    }
 };
 
+// Upload file to IPFS
 export const uploadFileToIPFS = async (file) => {
     const url = `https://api.pinata.cloud/pinning/pinFileToIPFS`;
 
-    // Creating FormData directly in the browser
+    // Check if file is a base64 string
+    if (typeof file === 'string' && file.startsWith('data:')) {
+        const [header, data] = file.split(',');
+        const mime = header.match(/:(.*?);/)[1];
+        const binary = atob(data);
+        const array = [];
+        for (let i = 0; i < binary.length; i++) {
+            array.push(binary.charCodeAt(i));
+        }
+        const blob = new Blob([new Uint8Array(array)], { type: mime });
+
+        // Use Blob object for FormData
+        file = blob;
+    }
+
     let data = new FormData();
     data.append('file', file);
 
@@ -43,7 +58,6 @@ export const uploadFileToIPFS = async (file) => {
     });
     data.append('pinataMetadata', metadata);
 
-    // pinataOptions are optional
     const pinataOptions = JSON.stringify({
         cidVersion: 0,
         customPinPolicy: {
@@ -61,27 +75,25 @@ export const uploadFileToIPFS = async (file) => {
     });
     data.append('pinataOptions', pinataOptions);
 
-    return axios
-        .post(url, data, {
+    try {
+        const response = await axios.post(url, data, {
             maxBodyLength: 'Infinity',
             headers: {
                 'Content-Type': `multipart/form-data`,
                 pinata_api_key: key,
                 pinata_secret_api_key: secret,
             }
-        })
-        .then(function (response) {
-            console.log("image uploaded", response.data.IpfsHash);
-            return {
-                success: true,
-                pinataURL: "https://gateway.pinata.cloud/ipfs/" + response.data.IpfsHash
-            };
-        })
-        .catch(function (error) {
-            console.log(error);
-            return {
-                success: false,
-                message: error.message,
-            };
         });
+        console.log("File uploaded:", response.data.IpfsHash);
+        return {
+            success: true,
+            pinataURL: "https://gateway.pinata.cloud/ipfs/" + response.data.IpfsHash
+        };
+    } catch (error) {
+        console.error("Error uploading file to IPFS:", error.response ? error.response.data : error.message);
+        return {
+            success: false,
+            message: error.response ? error.response.data : error.message,
+        };
+    }
 };

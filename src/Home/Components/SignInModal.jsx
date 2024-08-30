@@ -80,7 +80,7 @@ const SignIn = ({ isOpen, onClose }) => {
                             </div>
                             <h1 className="text-center text-black  text-2xl font-bold mb-2">Sign In</h1>
                             <p className="text-black  text-xs text-center">
-                                Klik tombol "Continue" untuk melanjutkan ke dashboard pengguna, pastikan akun anda sudah terdaftar dan terkoneksi.
+                                Klik tombol "Lanjutkan" untuk melanjutkan ke dashboard pengguna, pastikan akun anda sudah terdaftar dan terkoneksi.
                             </p>
 
                             <div className="text-center my-10">
@@ -88,7 +88,7 @@ const SignIn = ({ isOpen, onClose }) => {
                                     onClick={handleContinueClick}
                                     className="px-4 mx-2 py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors duration-300"
                                 >
-                                    Continue
+                                    Lanjutkan
                                 </button>
                             </div>
                             <div className="text-center">

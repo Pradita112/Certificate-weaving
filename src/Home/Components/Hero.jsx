@@ -20,7 +20,7 @@ const Hero = () => {
       <div className={`flex-1 ${styles.flexStart} flex-col xl:px-0 sm:px-16 px-6`}>
         <div className="flex flex-row items-center py-[6px] px-4 bg-discount-gradient rounded-[10px] mb-4">
           <p className={`${styles.paragraph} ml-2`}>
-            <span className="text-white"></span> Welcome To Future{" "}
+            <span className="text-white"></span> Selamat Datang{" "}
           </p>
         </div>
 
@@ -39,7 +39,7 @@ const Hero = () => {
             className={`py-4 px-6 font-poppins font-medium text-[18px] text-primary rounded-[10px] outline-none mt-5 button`} 
             onClick={handleGetStartedClick}
           >
-            Get Started
+            Ayo Mulai Sekarang
           </button>
         </div>
       </div>
@@ -54,9 +54,7 @@ const Hero = () => {
         {/* gradient end */}
       </div>
 
-      <div className={`ss:hidden ${styles.flexCenter} mt-10`}>
-        <GetStarted />
-      </div>
+  
 
       {/* SignIn Modal */}
       <SignIn isOpen={isSignInOpen} onClose={handleCloseSignIn} />
