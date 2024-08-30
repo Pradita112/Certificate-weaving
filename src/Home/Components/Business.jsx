@@ -28,14 +28,14 @@ const Business = () => (
       <p className={`${styles.paragraph} max-w-[470px] mt-5`}>
         the right credit card, you can improve your financial life by
         building credit, earning rewards, and saving money. But with hundreds
-        of credit cards on the market..
+        of credit cards on the market.
       </p>
       <button
         type="button"
         className={`py-4 px-6 font-poppins font-medium text-[18px] text-primary bg-blue-600 hover:bg-blue-700 rounded-[10px] outline-none mt-5`}
       >
         Get Startedd
-
+        
       </button>
     </div>
 
