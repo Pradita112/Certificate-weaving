@@ -3,8 +3,7 @@ import { uploadFileToIPFS, uploadJSONToIPFS } from "../../backend/pinata";
 import Marketplace from '../../backend/UpdateMarket.json';
 import { useLocation } from "react-router";
 import { ethers } from "ethers";
-import Modal from '../Modal';
-import SignatureCanvas from '../SignatureCanvas';
+import Modal from '../Modal'; // Import the Modal component
 
 const ETH_TO_IDR = 40000000; // 1 ETH = 40,000,000 IDR
 
@@ -25,7 +24,8 @@ export default function SellNFT() {
     const [secondFileURL, setSecondFileURL] = useState(null);
     const [message, updateMessage] = useState('');
     const [isModalVisible, setModalVisible] = useState(false);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(false); // Loading state
+    const location = useLocation();
     const [signature, setSignature] = useState('');
     const [showSignatureCanvas, setShowSignatureCanvas] = useState(false);
 
@@ -50,17 +50,13 @@ export default function SellNFT() {
         return new File([new Uint8Array(array)], filename, { type: mime });
     }
 
-    async function handleSignatureReceived(signature) {
-        setSignature(signature); // Save the signature in state
-    }
-
-    async function handleSignatureReceive(signatureDataURL) {
+    async function handleSignaturesecond(signatureDataURL) {
         setShowSignatureCanvas(false);
-
+    
         // Convert the data URL to a PNG file
         const signatureFile = dataURLToFile(signatureDataURL, 'signature.png');
         setSecondFileURL(URL.createObjectURL(signatureFile));
-
+    
         try {
             // Upload the PNG file to IPFS
             const response = await uploadFileToIPFS(signatureFile);
@@ -70,6 +66,11 @@ export default function SellNFT() {
         } catch (error) {
             console.error("Error uploading signature image:", error);
         }
+    }
+    
+
+    function handleSignatureReceived(signature) {
+        setSignature(signature); // Save the signature in state
     }
 
     async function toggleButtonState(disable) {
@@ -83,7 +84,7 @@ export default function SellNFT() {
     async function OnChangeFile(e) {
         const file = e.target.files[0];
         try {
-            setFileURL(URL.createObjectURL(file));
+            setFileURL(URL.createObjectURL(file)); // Set image preview
             toggleButtonState(true);
             updateMessage("Uploading image... please don't click anything!");
             const response = await uploadFileToIPFS(file);
@@ -93,6 +94,24 @@ export default function SellNFT() {
             }
         } catch (e) {
             console.log("Error during file upload", e);
+        } finally {
+            toggleButtonState(false);
+        }
+    }
+
+    async function OnChangeSecondFile(e) {
+        const file = e.target.files[0];
+        try {
+            setSecondFileURL(URL.createObjectURL(file)); // Set image preview
+            toggleButtonState(true);
+            updateMessage("Uploading second image... please don't click anything!");
+            const response = await uploadFileToIPFS(file);
+            if (response.success) {
+                setSecondFileURL(response.pinataURL);
+                updateMessage("");
+            }
+        } catch (e) {
+            console.log("Error during second file upload", e);
         } finally {
             toggleButtonState(false);
         }
@@ -124,7 +143,7 @@ export default function SellNFT() {
 
     async function listNFT() {
         try {
-            setLoading(true);
+            setLoading(true); // Start loading
             const metadataURL = await uploadMetadataToIPFS();
             if (metadataURL === -1) return;
 
@@ -154,29 +173,19 @@ export default function SellNFT() {
         } catch (e) {
             alert("Upload error: " + e);
         } finally {
-            setLoading(false);
+            setLoading(false); // Stop loading
             toggleButtonState(false);
         }
     }
 
     function handleListNFT(e) {
         e.preventDefault();
-        if (secondFileURL) {
-            setModalVisible(true);
-        } else {
-            if (showSignatureCanvas) {
-                setShowSignatureCanvas(true); // Open canvas if needed
-            } else {
-                listNFT(); // Continue with the listing process
-            }
-        }
+        setModalVisible(true);
     }
 
     function handleModalClose() {
         setModalVisible(false);
-        if (!showSignatureCanvas) {
-            listNFT();
-        }
+        listNFT(); // Continue with the listing process
     }
 
     function extractCID(url) {
@@ -185,57 +194,49 @@ export default function SellNFT() {
     }
 
     return (
-        <div className="bg-gray-100 min-h-screen flex flex-col items-center py-5 sm:py-10">
+        <div className="bg-gray-100 min-h-screen flex flex-col items-center py-10">
             {loading && (
                 <div className="fixed inset-0 bg-primary bg-opacity-80 flex flex-col justify-center items-center">
-                    <div className="border-8 border-t-8 border-primary border-t-secondary rounded-full w-12 h-12 sm:w-16 sm:h-16 animate-spin"></div>
-                    <div className="mt-2 sm:mt-4 text-white text-sm sm:text-lg">Loading...</div>
+                    <div className="border-8 border-t-8 border-primary border-t-secondary rounded-full w-16 h-16 animate-spin"></div>
+                    <div className="mt-4 text-white text-lg">Loading...</div>
                 </div>
             )}
-            <div className="bg-white shadow-lg rounded-lg p-4 sm:p-8 max-w-lg w-full">
-                <h3 className="text-center font-bold text-xl sm:text-2xl text-black mb-4 sm:mb-6">Unggah Karya mu Sekarang juga</h3>
+            <div className="bg-white shadow-lg rounded-lg p-8 max-w-lg w-full">
+                <h3 className="text-center font-bold text-2xl text-black mb-6">Upload your NFT to the marketplace</h3>
                 <form>
                     <div className="mb-4">
-                        <label className="block text-black text-sm font-bold mb-1 sm:mb-2" htmlFor="name">Nama Karya</label>
+                        <label className="block text-black text-sm font-bold mb-2" htmlFor="name">NFT Name</label>
                         <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="name" type="text" placeholder="Axie#4563" onChange={e => updateFormParams({ ...formParams, name: e.target.value })} value={formParams.name} />
                     </div>
                     <div className="mb-4">
-                        <label className="block text-black text-sm font-bold mb-1 sm:mb-2" htmlFor="description">Deskripsi Karya</label>
-                        <textarea className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" cols="40" rows="4 sm:rows-5" id="description" placeholder="Axie Infinity Collection" value={formParams.description} onChange={e => updateFormParams({ ...formParams, description: e.target.value })}></textarea>
+                        <label className="block text-black text-sm font-bold mb-2" htmlFor="description">NFT Description</label>
+                        <textarea className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" cols="40" rows="5" id="description" placeholder="Axie Infinity Collection" value={formParams.description} onChange={e => updateFormParams({ ...formParams, description: e.target.value })}></textarea>
                     </div>
                     <div className="mb-4">
-                        <label className="block text-black text-sm font-bold mb-1 sm:mb-2" htmlFor="price">Harga (in Rupiah)</label>
+                        <label className="block text-black text-sm font-bold mb-2" htmlFor="price">Price (in Rupiah)</label>
                         <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="number" placeholder="Min 40,000 IDR" step="1000" value={formParams.price} onChange={e => updateFormParams({ ...formParams, price: e.target.value })} />
-                        <p className="text-xs mt-1">Price in ETH: {formParams.ethPrice}</p>
+                        <p className="text-sm text-gray-500 mt-2">ETH Equivalent: {formParams.ethPrice} ETH</p>
                     </div>
                     <div className="mb-4">
-                        <label className="block text-black text-sm font-bold mb-1 sm:mb-2">Gambar Karya</label>
-                        <input type="file" accept="image/*" onChange={OnChangeFile} />
-                        {fileURL && <img src={fileURL} alt="NFT preview" className="mt-2 max-w-full h-auto" />}
+                        <label className="block text-black text-sm font-bold mb-2" htmlFor="image">Upload Image (&lt;500 KB)</label>
+                        <input type="file" onChange={OnChangeFile} />
+                        {fileURL && <img src={fileURL} alt="NFT Preview" className="mt-4 w-32 h-32 object-cover rounded" />}
                     </div>
                     <div className="mb-4">
-                        <button
-                            type="button"
-                            onClick={() => setShowSignatureCanvas(true)}
-                            className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded"
-                        >
-                            Tambah TTD
-                        </button>
+                        <label className="block text-black text-sm font-bold mb-2" htmlFor="image2">Upload Second Image (&lt;500 KB)</label>
+                        <input type="file" onChange={OnChangeSecondFile} />
+                        {secondFileURL && <img src={secondFileURL} alt="Second NFT Preview" className="mt-4 w-32 h-32 object-cover rounded" />}
                     </div>
-                    {showSignatureCanvas && <SignatureCanvas onSignatureReceive={handleSignatureReceive} />}
-                    <div className="mb-4">
-                        {secondFileURL && <p className="text-sm text-gray-600">Second image uploaded</p>}
-                    </div>
-                    <button id="list-button" type="submit" onClick={handleListNFT} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    <div className="text-red-500 text-center">{message}</div>
+                    <button onClick={handleListNFT} className="font-bold mt-6 w-full bg-blue-500 text-white rounded p-2 shadow-lg hover:bg-blue-700 transition duration-300" id="list-button">
                         List NFT
                     </button>
-                    <p className="text-red-500 mt-4">{message}</p>
                 </form>
             </div>
             <Modal
                 isVisible={isModalVisible}
                 onClose={handleModalClose}
-                onSubmit={handleModalClose}
+                onSubmit={handleModalClose} // Call handleModalClose for submission
                 nftDetails={{
                     name: formParams.name,
                     description: formParams.description,

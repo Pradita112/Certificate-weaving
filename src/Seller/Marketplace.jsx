@@ -20,6 +20,7 @@ const Marketplace = () => {
     "Temukan koleksi digital berikutnya!"
   ]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // Function to fetch metadata with retries and caching
   const fetchMetadata = async (url, retries = 3, delay = 1000) => {
@@ -73,28 +74,37 @@ const Marketplace = () => {
         console.log("Fetched NFTs:", transaction);
 
         const items = await Promise.all(transaction.map(async i => {
-          let tokenURI = await contract.tokenURI(i.tokenId);
-          tokenURI = GetIpfsUrlFromPinata(tokenURI);
-          const meta = await fetchMetadata(tokenURI);
-          const price = utils.formatUnits(i.price.toString(), 'ether');
-          return {
-            price,
-            tokenId: i.tokenId.toNumber(),
-            seller: i.seller,
-            owner: i.owner,
-            image: meta.image,
-            name: meta.name,
-            description: meta.description,
-          };
+          try {
+            let tokenURI = await contract.tokenURI(i.tokenId);
+            tokenURI = GetIpfsUrlFromPinata(tokenURI);
+            const meta = await fetchMetadata(tokenURI);
+            const price = utils.formatUnits(i.price.toString(), 'ether');
+            return {
+              price,
+              tokenId: i.tokenId.toNumber(),
+              seller: i.seller,
+              owner: i.owner,
+              image: meta.image,
+              name: meta.name,
+              description: meta.description,
+            };
+          } catch (metaError) {
+            console.error(`Failed to fetch metadata for tokenId ${i.tokenId}:`, metaError);
+            // Handle metadata fetching errors here if needed
+            return null;
+          }
         }));
 
-        console.log("NFT Items:", items);
+        const validItems = items.filter(item => item !== null); // Filter out invalid items
 
-        setNFTs(items);
-        setImages(items.map(item => item.image));
+        console.log("NFT Items:", validItems);
+
+        setNFTs(validItems);
+        setImages(validItems.map(item => item.image));
         setDataFetched(true);
       } catch (error) {
         console.error("Error fetching data:", error);
+        setError("Failed to load NFT data. Please try again later.");
       } finally {
         setLoading(false); // Hide loading screen when done
       }
@@ -136,15 +146,21 @@ const Marketplace = () => {
                     </h1>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
-                    {nfts.length > 0 ? (
-                      nfts.map(item => (
-                        <Item key={item.tokenId} item={item} />
-                      ))
-                    ) : (
-                      <p className="text-white">No items available.</p>
-                    )}
-                  </div>
+                  {error ? (
+                    <div className="text-white text-center">
+                      <p>{error}</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+                      {nfts.length > 0 ? (
+                        nfts.map(item => (
+                          <Item key={item.tokenId} item={item} />
+                        ))
+                      ) : (
+                        <p className="text-white">No items available.</p>
+                      )}
+                    </div>
+                  )}
                 </div>
               </section>
             </div>

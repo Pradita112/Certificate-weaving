@@ -15,7 +15,17 @@ function GetCIDFromIPFSURL(ipfsURL) {
     return cid;
 }
 
-export default function Certificate(props) {
+// Function to load image
+const loadImage = (url) => {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = () => reject(new Error('Image load error'));
+        img.src = url;
+    });
+};
+
+export default function Certificate() {
     const [data, setData] = useState({});
     const [dataFetched, setDataFetched] = useState(false);
     const [currAddress, setCurrAddress] = useState("0x");
@@ -29,7 +39,7 @@ export default function Certificate(props) {
             const signer = provider.getSigner();
             const addr = await signer.getAddress();
             let contract = new ethers.Contract(MarketplaceJSON.address, MarketplaceJSON.abi, signer);
-            var tokenURI = await contract.tokenURI(tokenId);
+            let tokenURI = await contract.tokenURI(tokenId);
             const listedToken = await contract.getListedTokenForId(tokenId);
             tokenURI = GetIpfsUrlFromPinata(tokenURI);
             let meta = await axios.get(tokenURI);
@@ -69,7 +79,7 @@ export default function Certificate(props) {
     if (typeof data.image === "string") data.image = GetIpfsUrlFromPinata(data.image);
 
     // Function to handle PDF download
-    const handleDownloadPDF = () => {
+    const handleDownloadPDF = async () => {
         const doc = new jsPDF();
 
         doc.text("CERTIFICATE TO AUTHENTICITY", 105, 15, { align: "center" });
@@ -81,20 +91,15 @@ export default function Certificate(props) {
         doc.text(`CID: ${data.secondImageCID}`, 20, 105);
 
         if (data.secondImage) {
-            const img = new Image();
-            img.src = data.secondImage;
-
-            img.onload = () => {
+            try {
+                const img = await loadImage(data.secondImage);
                 doc.addImage(img, 'JPEG', 15, 120, 180, 180);
-                doc.save("certificate.pdf");
-            };
-            
-            img.onerror = (error) => {
+            } catch (error) {
                 console.error('Error loading image:', error);
-            };
-        } else {
-            doc.save("certificate.pdf");
+            }
         }
+
+        doc.save("certificate.pdf");
     };
 
     // Create URL for QR code
@@ -119,7 +124,7 @@ export default function Certificate(props) {
 
                 <h1>CERTIFICATE TO AUTHENTICITY</h1>
 
-                <span className={styles.smallText}>FOR THE MAKER OF THIS WORK OF ART </span>
+                <span className={styles.smallText}>FOR THE MAKER OF THIS WORK OF ART</span>
 
                 <p className={styles.primaryItalicText}>{data.name}</p>
 

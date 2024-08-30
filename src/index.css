@@ -218,5 +218,27 @@ input:focus, textarea:focus {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+@media (max-width: 640px) {
+  .certificateWrapper {
+      padding: 1rem;
+  }
+  .certificateContainer {
+      padding: 1rem;
+  }
+  .certificateContainer img {
+      width: 100%;
+      height: auto;
+  }
+  .certificateContainer h1 {
+      font-size: 1.5rem;
+  }
+  .certificateContainer h2 {
+      font-size: 1.25rem;
+  }
+  .signatureBlock {
+      margin-top: 1rem;
+  }
+}
+
 
 

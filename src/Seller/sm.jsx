@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { uploadFileToIPFS, uploadJSONToIPFS } from "../../backend/pinata";
 import Marketplace from '../../backend/UpdateMarket.json';
-import { useLocation } from "react-router";
 import { ethers } from "ethers";
 import Modal from '../Modal';
 import SignatureCanvas from '../SignatureCanvas';
@@ -50,17 +49,13 @@ export default function SellNFT() {
         return new File([new Uint8Array(array)], filename, { type: mime });
     }
 
-    async function handleSignatureReceived(signature) {
-        setSignature(signature); // Save the signature in state
-    }
-
-    async function handleSignatureReceive(signatureDataURL) {
+    async function handleSignaturesecond(signatureDataURL) {
         setShowSignatureCanvas(false);
-
+    
         // Convert the data URL to a PNG file
         const signatureFile = dataURLToFile(signatureDataURL, 'signature.png');
         setSecondFileURL(URL.createObjectURL(signatureFile));
-
+    
         try {
             // Upload the PNG file to IPFS
             const response = await uploadFileToIPFS(signatureFile);
@@ -70,6 +65,9 @@ export default function SellNFT() {
         } catch (error) {
             console.error("Error uploading signature image:", error);
         }
+    }
+    function handleSignatureReceived(signature) {
+        setSignature(signature); // Save the signature in state
     }
 
     async function toggleButtonState(disable) {
@@ -185,64 +183,82 @@ export default function SellNFT() {
     }
 
     return (
-        <div className="bg-gray-100 min-h-screen flex flex-col items-center py-5 sm:py-10">
+        <div className="bg-gray-100 min-h-screen flex flex-col items-center py-10">
             {loading && (
-                <div className="fixed inset-0 bg-primary bg-opacity-80 flex flex-col justify-center items-center">
-                    <div className="border-8 border-t-8 border-primary border-t-secondary rounded-full w-12 h-12 sm:w-16 sm:h-16 animate-spin"></div>
-                    <div className="mt-2 sm:mt-4 text-white text-sm sm:text-lg">Loading...</div>
+                <div className="absolute top-0 left-0 w-full h-full bg-gray-700 bg-opacity-50 flex items-center justify-center text-white">
+                    <span>Loading...</span>
                 </div>
             )}
-            <div className="bg-white shadow-lg rounded-lg p-4 sm:p-8 max-w-lg w-full">
-                <h3 className="text-center font-bold text-xl sm:text-2xl text-black mb-4 sm:mb-6">Unggah Karya mu Sekarang juga</h3>
-                <form>
-                    <div className="mb-4">
-                        <label className="block text-black text-sm font-bold mb-1 sm:mb-2" htmlFor="name">Nama Karya</label>
-                        <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="name" type="text" placeholder="Axie#4563" onChange={e => updateFormParams({ ...formParams, name: e.target.value })} value={formParams.name} />
-                    </div>
-                    <div className="mb-4">
-                        <label className="block text-black text-sm font-bold mb-1 sm:mb-2" htmlFor="description">Deskripsi Karya</label>
-                        <textarea className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" cols="40" rows="4 sm:rows-5" id="description" placeholder="Axie Infinity Collection" value={formParams.description} onChange={e => updateFormParams({ ...formParams, description: e.target.value })}></textarea>
-                    </div>
-                    <div className="mb-4">
-                        <label className="block text-black text-sm font-bold mb-1 sm:mb-2" htmlFor="price">Harga (in Rupiah)</label>
-                        <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="number" placeholder="Min 40,000 IDR" step="1000" value={formParams.price} onChange={e => updateFormParams({ ...formParams, price: e.target.value })} />
-                        <p className="text-xs mt-1">Price in ETH: {formParams.ethPrice}</p>
-                    </div>
-                    <div className="mb-4">
-                        <label className="block text-black text-sm font-bold mb-1 sm:mb-2">Gambar Karya</label>
-                        <input type="file" accept="image/*" onChange={OnChangeFile} />
-                        {fileURL && <img src={fileURL} alt="NFT preview" className="mt-2 max-w-full h-auto" />}
-                    </div>
-                    <div className="mb-4">
-                        <button
-                            type="button"
-                            onClick={() => setShowSignatureCanvas(true)}
-                            className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded"
-                        >
-                            Tambah TTD
-                        </button>
-                    </div>
-                    {showSignatureCanvas && <SignatureCanvas onSignatureReceive={handleSignatureReceive} />}
-                    <div className="mb-4">
-                        {secondFileURL && <p className="text-sm text-gray-600">Second image uploaded</p>}
-                    </div>
-                    <button id="list-button" type="submit" onClick={handleListNFT} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                        List NFT
-                    </button>
-                    <p className="text-red-500 mt-4">{message}</p>
-                </form>
-            </div>
-            <Modal
-                isVisible={isModalVisible}
-                onClose={handleModalClose}
-                onSubmit={handleModalClose}
-                nftDetails={{
-                    name: formParams.name,
-                    description: formParams.description,
-                    secondImage: secondFileURL ? extractCID(secondFileURL) : ''
-                }}
-                onSignatureReady={handleSignatureReceived}
-            />
+            <form onSubmit={handleListNFT} className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+                <h2 className="text-2xl font-bold mb-4">List Your NFT</h2>
+                <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700">Name</label>
+                    <input
+                        type="text"
+                        value={formParams.name}
+                        onChange={(e) => updateFormParams({ ...formParams, name: e.target.value })}
+                        className="mt-1 block w-full p-2 border border-gray-300 rounded"
+                    />
+                </div>
+                <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700">Description</label>
+                    <textarea
+                        value={formParams.description}
+                        onChange={(e) => updateFormParams({ ...formParams, description: e.target.value })}
+                        className="mt-1 block w-full p-2 border border-gray-300 rounded"
+                    />
+                </div>
+                <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700">Price (IDR)</label>
+                    <input
+                        type="number"
+                        value={formParams.price}
+                        onChange={(e) => updateFormParams({ ...formParams, price: e.target.value })}
+                        className="mt-1 block w-full p-2 border border-gray-300 rounded"
+                    />
+                </div>
+                <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700">Upload Image</label>
+                    <input
+                        type="file"
+                        accept="image/*"
+                        onChange={OnChangeFile}
+                        className="mt-1 block w-full"
+                    />
+                    {fileURL && <img src={fileURL} alt="NFT" className="mt-4 w-32 h-32 object-cover" />}
+                </div>
+                <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700">Upload Signature Image</label>
+                    <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => setShowSignatureCanvas(true)}
+                        className="mt-1 block w-full"
+                    />
+                    {secondFileURL && <img src={secondFileURL} alt="Signature" className="mt-4 w-32 h-32 object-cover" />}
+                </div>
+                {message && <p className="text-red-500 mb-4">{message}</p>}
+                <button
+                    type="submit"
+                    id="list-button"
+                    className="bg-blue-500 text-white px-4 py-2 rounded"
+                >
+                    List NFT
+                </button>
+            </form>
+            {isModalVisible && (
+                <Modal
+                    isVisible={isModalVisible}
+                    onClose={() => setModalVisible(false)}
+                    onSubmit={handleModalClose}
+                    nftDetails={{
+                        name: formParams.name,
+                        description: formParams.description,
+                        secondImage: secondFileURL ? extractCID(secondFileURL) : ''
+                    }}
+                    onSignatureReady={handleSignatureReceived}
+                />
+            )}
         </div>
     );
 }

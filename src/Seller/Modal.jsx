@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 import verifySig from '../backend/VerifySignature.json';
 import { uploadJSONToIPFS } from '../backend/pinata';
 
-export default function Modal({ isVisible, onClose, onSubmit, nftDetails,onSignatureReady }) {
+export default function Modal({ isVisible, onClose, onSubmit, nftDetails, onSignatureReady }) {
     const [messageHash, setMessageHash] = useState(null);
     const [signature, setSignature] = useState(null);
     const [signatureIPFSURL, setSignatureIPFSURL] = useState(null);
@@ -21,11 +21,7 @@ export default function Modal({ isVisible, onClose, onSubmit, nftDetails,onSigna
         };
 
         getMessageHash();
-    }, [nftDetails, verifySig.address, verifySig.abi]);
-    function handleSignatureReady(signature) {
-        // Call the callback function with the signature
-        onSignatureReady(signature);
-    }
+    }, [nftDetails]);
 
     const signMessageHash = async () => {
         try {
@@ -41,9 +37,9 @@ export default function Modal({ isVisible, onClose, onSubmit, nftDetails,onSigna
                 description: nftDetails.description,
                 cid: nftDetails.secondImage
             };
-            const signatureIPFSURL = await uploadJSONToIPFS(data);
-            setSignatureIPFSURL(signatureIPFSURL.pinataURL);
-            handleSignatureReady(signature);
+            const response = await uploadJSONToIPFS(data);
+            setSignatureIPFSURL(response.pinataURL);
+            onSignatureReady(signature); // Notify parent component with the signature
         } catch (error) {
             console.error('Error signing message hash:', error);
         }
