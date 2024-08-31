@@ -48,7 +48,7 @@ const Navbar = () => {
   function updateButton() {
     const ethereumButton = document.querySelector('.navbar-connect-button');
     if (ethereumButton) {
-      ethereumButton.textContent = "Connected";
+      ethereumButton.textContent = "Terhubung";
       ethereumButton.classList.remove("hover:bg-blue-70", "bg-blue-500");
       ethereumButton.classList.add("hover:bg-green-70", "bg-green-500");
     }
@@ -88,14 +88,14 @@ const Navbar = () => {
       </h1>
       <ul className='hidden md:flex'>
         <li className='p-4'>
-          <Link to="/cart" className='hover:underline'>Marketplace</Link>
+          <Link to="/cart" className='hover:underline'>Pasar</Link>
         </li>
         <li className='p-4'>
           <Link to="/profile" className='hover:underline'>Profile</Link>
         </li>
         <li className='p-4'>
           {connected ? (
-            <button type="button" className='bg-green-500 hover:bg-green-700 text-white font-bold py-1.5 px-4 rounded navbar-connect-button'>Connected</button>
+            <button type="button" className='bg-green-500 hover:bg-green-700 text-white font-bold py-1.5 px-4 rounded navbar-connect-button'>Terhubung</button>
           ) : (
             <button type="button" className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-1.5 px-4 rounded enableEthereumButton navbar-connect-button' onClick={connectToWebsite}>Connect</button>
           )}
@@ -107,7 +107,7 @@ const Navbar = () => {
         </svg>
       </div>
       <ul className={nav ? 'fixed left-0 top-0 w-[60%] h-full border-r border-r-gray-900 bg-[#000300] ease-in-out duration-500 z-50' : 'ease-in-out duration-500 fixed left-[-100%]'}>
-        <li className='p-4 border-b border-gray-600'><Link to="/market" onClick={handleNav}>Marketplace</Link></li>
+        <li className='p-4 border-b border-gray-600'><Link to="/market" onClick={handleNav}>Pasar</Link></li>
         <li className='p-4 border-b border-gray-600'><Link to="/profile" onClick={handleNav}>Profile</Link></li>
         <li className='p-4'><Link to="/contact" onClick={handleNav}>Contact</Link></li>
       </ul>

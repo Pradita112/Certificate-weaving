@@ -24,10 +24,8 @@ const Navbar = () => {
       </div>
       <ul className='hidden md:flex space-x-4'>
         <li className='p-2 hover:bg-gray-700 rounded-md transition duration-300'>Home</li>
-        <li className='p-2 hover:bg-gray-700 rounded-md transition duration-300'>Company</li>
-        <li className='p-2 hover:bg-gray-700 rounded-md transition duration-300'>Resources</li>
-        <li className='p-2 hover:bg-gray-700 rounded-md transition duration-300'>About</li>
-        <li className='p-2 hover:bg-gray-700 rounded-md transition duration-300'>Contact</li>
+        <li className='p-2 hover:bg-gray-700 rounded-md transition duration-300'>Tentang</li>
+        <li className='p-2 hover:bg-gray-700 rounded-md transition duration-300'>Kontak</li>
         <li className='p-2'>
           <button type="button" className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded transition duration-300' onClick={handleSignInModal}>Sign In</button>
         </li>
@@ -50,9 +48,9 @@ const Navbar = () => {
         <li className='p-4 border-b border-gray-600 hover:bg-gray-800 rounded-md transition duration-300'>Company</li>
         <li className='p-4 border-b border-gray-600 hover:bg-gray-800 rounded-md transition duration-300'>Resources</li>
         <li className='p-4 border-b border-gray-600 hover:bg-gray-800 rounded-md transition duration-300'>About</li>
-        <li className='p-4 border-b border-gray-600 hover:bg-gray-800 rounded-md transition duration-300'>Contact</li>
+        <li className='p-4 border-b border-gray-600 hover:bg-gray-800 rounded-md transition duration-300'>Kontak</li>
         <li className='p-4'>
-          <button type="button" className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded transition duration-300' onClick={handleSignInModal}>Sign In</button>
+          <button type="button" className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded transition duration-300' onClick={handleSignInModal}>Masuk</button>
         </li>
       </ul>
 
