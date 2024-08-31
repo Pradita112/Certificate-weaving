@@ -27,7 +27,7 @@ const Navbar = () => {
         <li className='p-2 hover:bg-gray-700 rounded-md transition duration-300'>Tentang</li>
         <li className='p-2 hover:bg-gray-700 rounded-md transition duration-300'>Kontak</li>
         <li className='p-2'>
-          <button type="button" className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded transition duration-300' onClick={handleSignInModal}>Sign In</button>
+          <button type="button" className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded transition duration-300' onClick={handleSignInModal}>Masuk</button>
         </li>
       </ul>
       <div onClick={handleNav} className='block md:hidden'>

@@ -13,10 +13,10 @@ const Marketplace = () => {
   const [dataFetched, setDataFetched] = useState(false);
   const [images, setImages] = useState([]);
   const [texts, setTexts] = useState([
-    "Cek NFT terpopuler hari ini!",
+    "Cek Karya terpopuler hari ini!",
     "Temukan aset digital unik!",
     "Miliki karya seni digital!",
-    "Jelajahi pasar NFT!",
+    "Jelajahi pasar Tenun Digital!",
     "Temukan koleksi digital berikutnya!"
   ]);
   const [loading, setLoading] = useState(true);
