@@ -150,7 +150,7 @@ export default function SellNFT() {
             alert("Successfully listed your NFT!");
             updateMessage("");
             updateFormParams({ name: '', description: '', price: '', ethPrice: '' });
-            window.location.replace("/");
+            window.location.replace("/market");
         } catch (e) {
             alert("Upload error: " + e);
         } finally {
@@ -193,23 +193,23 @@ export default function SellNFT() {
                 </div>
             )}
             <div className="bg-white shadow-lg rounded-lg p-4 sm:p-8 max-w-lg w-full">
-                <h3 className="text-center font-bold text-xl sm:text-2xl text-black mb-4 sm:mb-6">Unggah Karya mu Sekarang juga</h3>
+                <h3 className="text-center font-bold text-xl sm:text-2xl text-black mb-4 sm:mb-6">Uploud your works</h3>
                 <form>
                     <div className="mb-4">
-                        <label className="block text-black text-sm font-bold mb-1 sm:mb-2" htmlFor="name">Nama Karya</label>
+                        <label className="block text-black text-sm font-bold mb-1 sm:mb-2" htmlFor="name">Name</label>
                         <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="name" type="text" placeholder="Axie#4563" onChange={e => updateFormParams({ ...formParams, name: e.target.value })} value={formParams.name} />
                     </div>
                     <div className="mb-4">
-                        <label className="block text-black text-sm font-bold mb-1 sm:mb-2" htmlFor="description">Deskripsi Karya</label>
+                        <label className="block text-black text-sm font-bold mb-1 sm:mb-2" htmlFor="description">Description</label>
                         <textarea className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" cols="40" rows="4 sm:rows-5" id="description" placeholder="Axie Infinity Collection" value={formParams.description} onChange={e => updateFormParams({ ...formParams, description: e.target.value })}></textarea>
                     </div>
                     <div className="mb-4">
-                        <label className="block text-black text-sm font-bold mb-1 sm:mb-2" htmlFor="price">Harga (in Rupiah)</label>
+                        <label className="block text-black text-sm font-bold mb-1 sm:mb-2" htmlFor="price">Price (in Rupiah)</label>
                         <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="number" placeholder="Min 40,000 IDR" step="1000" value={formParams.price} onChange={e => updateFormParams({ ...formParams, price: e.target.value })} />
                         <p className="text-xs mt-1">Price in ETH: {formParams.ethPrice}</p>
                     </div>
                     <div className="mb-4">
-                        <label className="block text-black text-sm font-bold mb-1 sm:mb-2">Gambar Karya</label>
+                        <label className="block text-black text-sm font-bold mb-1 sm:mb-2">Image Woven</label>
                         <input type="file" accept="image/*" onChange={OnChangeFile} />
                         {fileURL && <img src={fileURL} alt="NFT preview" className="mt-2 max-w-full h-auto" />}
                     </div>
@@ -219,7 +219,7 @@ export default function SellNFT() {
                             onClick={() => setShowSignatureCanvas(true)}
                             className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded"
                         >
-                            Tambah TTD
+                            Add Signature
                         </button>
                     </div>
                     {showSignatureCanvas && <SignatureCanvas onSignatureReceive={handleSignatureReceive} />}

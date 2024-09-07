@@ -33,7 +33,7 @@ const Marketplace = () => {
     }
 
     try {
-      const response = await axios.get(url, { timeout: 10000 });
+      const response = await axios.get(url, { timeout: 15000 });  // Increased timeout to 15 seconds
       const data = response.data;
 
       // Store the data in cache
@@ -73,10 +73,11 @@ const Marketplace = () => {
 
         console.log("Fetched NFTs:", transaction);
 
-        const items = await Promise.all(transaction.map(async i => {
+        const items = await Promise.all(transaction.map(async (i) => {
           try {
             let tokenURI = await contract.tokenURI(i.tokenId);
             tokenURI = GetIpfsUrlFromPinata(tokenURI);
+            console.log("Token URI:", tokenURI);  // Log the final URL for debugging
             const meta = await fetchMetadata(tokenURI);
             const price = utils.formatUnits(i.price.toString(), 'ether');
             return {
@@ -90,17 +91,15 @@ const Marketplace = () => {
             };
           } catch (metaError) {
             console.error(`Failed to fetch metadata for tokenId ${i.tokenId}:`, metaError);
-            // Handle metadata fetching errors here if needed
-            return null;
+            return null; // Return null if metadata fetch fails
           }
         }));
 
-        const validItems = items.filter(item => item !== null); // Filter out invalid items
-
+        const validItems = items.filter((item) => item !== null); // Filter out invalid items
         console.log("NFT Items:", validItems);
 
         setNFTs(validItems);
-        setImages(validItems.map(item => item.image));
+        setImages(validItems.map((item) => item.image));
         setDataFetched(true);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -153,7 +152,7 @@ const Marketplace = () => {
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
                       {nfts.length > 0 ? (
-                        nfts.map(item => (
+                        nfts.map((item) => (
                           <Item key={item.tokenId} item={item} />
                         ))
                       ) : (

@@ -30,10 +30,11 @@ const RoleSelectionModal = ({ isOpen, onClose, onRoleSelect }) => {
                 setUserRole(roleValue);
                 setLoading(false);
 
+                // Automatically redirect based on the user role
                 if (roleValue === 1) {
-                    window.location.href = '/marketuser';
+                    window.location.href = '/marketuser'; // Redirect to buyer page
                 } else if (roleValue === 2) {
-                    window.location.href = '/market';
+                    window.location.href = '/market'; // Redirect to seller page
                 }
             } catch (error) {
                 console.error('Error fetching user role:', error);
@@ -63,11 +64,15 @@ const RoleSelectionModal = ({ isOpen, onClose, onRoleSelect }) => {
             const tx = await contract.setUserRole(roleValue);
             await tx.wait();
 
+            // Call onRoleSelect callback to indicate role selection
             onRoleSelect(role);
 
-            // Redirect based on the selected role
+            // Close the modal
+            onClose();
+
+            // Redirect based on the selected role after the transaction is successful
             if (role === 'Buyer') {
-                window.location.href = '/user';
+                window.location.href = '/marketuser';
             } else if (role === 'Seller') {
                 window.location.href = '/market';
             }

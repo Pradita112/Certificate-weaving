@@ -12,6 +12,8 @@ export default function NFTPage() {
     const [message, updateMessage] = useState("");
     const [currAddress, updateCurrAddress] = useState("0x");
     const [loading, setLoading] = useState(true); // Loading state
+    const [resellPrice, setResellPrice] = useState(""); // State for resell price
+    const [isModalOpen, setIsModalOpen] = useState(false); // State for modal visibility
 
     const params = useParams();
     const tokenId = params.tokenId;
@@ -41,6 +43,7 @@ export default function NFTPage() {
                 image: meta.image,
                 name: meta.name,
                 description: meta.description,
+                currentlyListed: listedToken.currentlyListed
             };
 
             updateData(item);
@@ -69,6 +72,24 @@ export default function NFTPage() {
             updateMessage("");
 
             getNFTData(tokenId);
+        } catch (e) {
+            alert("Error: " + e.message);
+        }
+    }
+
+    async function resellNFT() {
+        try {
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const signer = provider.getSigner();
+            let contract = new ethers.Contract(MarketplaceJSON.address, MarketplaceJSON.abi, signer);
+            const priceInEther = ethers.utils.parseUnits(resellPrice, 'ether');
+
+            let transaction = await contract.listTokenForSale(data.tokenId, priceInEther);
+            await transaction.wait();
+
+            alert('NFT listed for resale successfully!');
+            setIsModalOpen(false); // Close the modal
+            getNFTData(data.tokenId);
         } catch (e) {
             alert("Error: " + e.message);
         }
@@ -120,11 +141,29 @@ export default function NFTPage() {
                             <strong>Current Owner:</strong> <span className="text-sm">{data.owner}</span>
                         </div>
                         <div className="mb-4">
-                            <strong>Previous Owner:</strong> <span className="text-sm">{data.seller}</span>
+                            <strong>Seller:</strong> <span className="text-sm">{data.seller}</span>
                         </div>
                         <div className="mb-4">
                             {currAddress.toLowerCase() === data.owner?.toLowerCase() ? (
-                                <div className="text-emerald-700">You are the owner of this NFT</div>
+                                <div>
+                                    <div className="text-emerald-700">You are the owner of this NFT</div>
+                                    <button
+                                        className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded mt-4"
+                                        onClick={() => setIsModalOpen(true)}
+                                    >
+                                        Resell this NFT
+                                    </button>
+                                </div>
+                            ) : data.currentlyListed && currAddress.toLowerCase() === data.seller?.toLowerCase() ? (
+                                <div>
+                                    <div className="text-emerald-700">You are the seller of this NFT</div>
+                                    <button
+                                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                                        onClick={() => buyNFT(tokenId)}
+                                    >
+                                        Buy this NFT
+                                    </button>
+                                </div>
                             ) : (
                                 <button
                                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
@@ -150,6 +189,36 @@ export default function NFTPage() {
                     </div>
                 </div>
             </div>
+
+            {/* Modal for Resell Confirmation */}
+            {isModalOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm mx-auto">
+                        <h2 className="text-lg font-bold mb-4">Resell NFT</h2>
+                        <p className="mb-4">Enter the price at which you want to resell the NFT:</p>
+                        <input
+                            type="text"
+                            value={resellPrice}
+                            onChange={(e) => setResellPrice(e.target.value)}
+                            className="border rounded p-2 w-full mb-4"
+                        />
+                        <div className="flex justify-between">
+                            <button
+                                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                                onClick={resellNFT}
+                            >
+                                Confirm Resell
+                            </button>
+                            <button
+                                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                                onClick={() => setIsModalOpen(false)}
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
