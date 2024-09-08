@@ -1,9 +1,17 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 
 const SignatureCanvas = ({ onSignatureReceive }) => {
     const canvasRef = useRef(null);
     const [isDrawing, setIsDrawing] = useState(false);
     const [lastPosition, setLastPosition] = useState({ x: 0, y: 0 });
+
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'black';
+        ctx.lineCap = 'round';
+    }, []);
 
     // Helper function to get the touch position relative to the canvas
     const getTouchPos = (canvas, touchEvent) => {
@@ -40,7 +48,7 @@ const SignatureCanvas = ({ onSignatureReceive }) => {
 
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
-        
+
         let newPosition;
         if (e.type === 'mousemove') {
             newPosition = { x: e.nativeEvent.offsetX, y: e.nativeEvent.offsetY };
