@@ -5,6 +5,7 @@ const SignatureCanvas = ({ onSignatureReceive }) => {
     const [isDrawing, setIsDrawing] = useState(false);
     const [lastPosition, setLastPosition] = useState({ x: 0, y: 0 });
 
+    // Helper function to get the touch position relative to the canvas
     const getTouchPos = (canvas, touchEvent) => {
         const rect = canvas.getBoundingClientRect();
         return {
@@ -13,11 +14,13 @@ const SignatureCanvas = ({ onSignatureReceive }) => {
         };
     };
 
+    // Start drawing (called on both mouse down and touch start)
     const startDrawing = (e) => {
+        e.preventDefault(); // Prevent scrolling or other default touch behaviors
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
         ctx.beginPath();
-        
+
         let position;
         if (e.type === 'mousedown') {
             position = { x: e.nativeEvent.offsetX, y: e.nativeEvent.offsetY };
@@ -30,12 +33,14 @@ const SignatureCanvas = ({ onSignatureReceive }) => {
         setIsDrawing(true);
     };
 
+    // Continue drawing as the user moves the mouse or finger
     const draw = (e) => {
         if (!isDrawing) return;
+        e.preventDefault(); // Prevent default touch behaviors
 
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
-
+        
         let newPosition;
         if (e.type === 'mousemove') {
             newPosition = { x: e.nativeEvent.offsetX, y: e.nativeEvent.offsetY };
@@ -48,20 +53,24 @@ const SignatureCanvas = ({ onSignatureReceive }) => {
         setLastPosition(newPosition);
     };
 
-    const stopDrawing = () => {
+    // Stop drawing (on mouse up or touch end)
+    const stopDrawing = (e) => {
+        e.preventDefault();
         setIsDrawing(false);
     };
 
+    // Clear the canvas
     const clearSignature = () => {
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
     };
 
+    // Save the signature as a data URL and send it to the parent component
     const saveSignature = () => {
         const canvas = canvasRef.current;
         const dataURL = canvas.toDataURL('image/png');
-        onSignatureReceive(dataURL); // Send the dataURL to the parent component
+        onSignatureReceive(dataURL);
     };
 
     return (
@@ -78,6 +87,7 @@ const SignatureCanvas = ({ onSignatureReceive }) => {
                 onTouchStart={startDrawing}
                 onTouchMove={draw}
                 onTouchEnd={stopDrawing}
+                style={{ touchAction: 'none' }} // Disable the default touch action (to prevent zooming, scrolling)
             ></canvas>
             <div className="flex space-x-2">
                 <button onClick={clearSignature} className="bg-red-500 text-white px-4 py-2 rounded">
