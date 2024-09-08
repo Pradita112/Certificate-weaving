@@ -3,21 +3,49 @@ import React, { useRef, useState } from 'react';
 const SignatureCanvas = ({ onSignatureReceive }) => {
     const canvasRef = useRef(null);
     const [isDrawing, setIsDrawing] = useState(false);
+    const [lastPosition, setLastPosition] = useState({ x: 0, y: 0 });
+
+    const getTouchPos = (canvas, touchEvent) => {
+        const rect = canvas.getBoundingClientRect();
+        return {
+            x: touchEvent.touches[0].clientX - rect.left,
+            y: touchEvent.touches[0].clientY - rect.top
+        };
+    };
 
     const startDrawing = (e) => {
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
         ctx.beginPath();
+        
+        let position;
+        if (e.type === 'mousedown') {
+            position = { x: e.nativeEvent.offsetX, y: e.nativeEvent.offsetY };
+        } else {
+            position = getTouchPos(canvas, e);
+        }
+
+        ctx.moveTo(position.x, position.y);
+        setLastPosition(position);
         setIsDrawing(true);
     };
 
     const draw = (e) => {
         if (!isDrawing) return;
+
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
-        const { offsetX, offsetY } = e.nativeEvent;
-        ctx.lineTo(offsetX, offsetY);
+
+        let newPosition;
+        if (e.type === 'mousemove') {
+            newPosition = { x: e.nativeEvent.offsetX, y: e.nativeEvent.offsetY };
+        } else {
+            newPosition = getTouchPos(canvas, e);
+        }
+
+        ctx.lineTo(newPosition.x, newPosition.y);
         ctx.stroke();
+        setLastPosition(newPosition);
     };
 
     const stopDrawing = () => {
@@ -33,7 +61,7 @@ const SignatureCanvas = ({ onSignatureReceive }) => {
     const saveSignature = () => {
         const canvas = canvasRef.current;
         const dataURL = canvas.toDataURL('image/png');
-        onSignatureReceive(dataURL); // Send the dataURL to parent component
+        onSignatureReceive(dataURL); // Send the dataURL to the parent component
     };
 
     return (
@@ -46,6 +74,7 @@ const SignatureCanvas = ({ onSignatureReceive }) => {
                 onMouseDown={startDrawing}
                 onMouseMove={draw}
                 onMouseUp={stopDrawing}
+                onMouseLeave={stopDrawing}
                 onTouchStart={startDrawing}
                 onTouchMove={draw}
                 onTouchEnd={stopDrawing}

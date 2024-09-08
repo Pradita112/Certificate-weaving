@@ -209,8 +209,15 @@ export default function SellNFT() {
                         <p className="text-xs mt-1">Price in ETH: {formParams.ethPrice}</p>
                     </div>
                     <div className="mb-4">
-                        <label className="block text-black text-sm font-bold mb-1 sm:mb-2">Image Woven</label>
-                        <input type="file" accept="image/*" onChange={OnChangeFile} />
+                        <label className="block text-black text-sm font-bold mb-1 sm:mb-2">
+                            Upload Image Woven (Tap to select)
+                        </label>
+                        <input 
+                            type="file" 
+                            accept="image/*" 
+                            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
+                            onChange={OnChangeFile}
+                        />
                         {fileURL && <img src={fileURL} alt="NFT preview" className="mt-2 max-w-full h-auto" />}
                     </div>
                     <div className="mb-4">
