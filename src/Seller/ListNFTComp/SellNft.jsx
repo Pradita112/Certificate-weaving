@@ -223,13 +223,37 @@ export default function SellNFT() {
                     </div>
                     <div className="mb-4">
                         <label className="block text-black text-sm font-bold mb-1 sm:mb-2">
-                            Upload Image Woven (Tap to select or take a photo)
+                            Upload Image Woven
                         </label>
+                        <div className="flex space-x-2 mb-2">
+                            <button
+                                type="button"
+                                onClick={() => document.getElementById("file-upload-gallery").click()}
+                                className="bg-gray-500 hover:bg-gray-700 text-black font-bold py-2 px-4 rounded"
+                            >
+                                Select from Gallery
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => document.getElementById("file-upload-camera").click()}
+                                className="bg-gray-500 hover:bg-gray-700 text-black font-bold py-2 px-4 rounded"
+                            >
+                                Take a Photo
+                            </button>
+                        </div>
                         <input
+                            id="file-upload-gallery"
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={handleFileChange}
+                        />
+                        <input
+                            id="file-upload-camera"
                             type="file"
                             accept="image/*"
                             capture="environment"
-                            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
+                            className="hidden"
                             onChange={handleFileChange}
                         />
                         {fileURL && <img src={fileURL} alt="NFT preview" className="mt-2 max-w-full h-auto" />}
