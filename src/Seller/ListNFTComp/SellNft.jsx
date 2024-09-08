@@ -223,11 +223,12 @@ export default function SellNFT() {
                     </div>
                     <div className="mb-4">
                         <label className="block text-black text-sm font-bold mb-1 sm:mb-2">
-                            Upload Image Woven (Tap to select)
+                            Upload Image Woven (Tap to select or take a photo)
                         </label>
                         <input
                             type="file"
                             accept="image/*"
+                            capture="environment"
                             className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
                             onChange={handleFileChange}
                         />
