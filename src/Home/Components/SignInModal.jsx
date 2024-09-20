@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import detectEthereumProvider from "@metamask/detect-provider";
-import RoleSelectionModal from './RoleSelectionModal'; // Import komponen RoleSelectionModal
+import Cookies from 'js-cookie';
+import RoleSelectionModal from './RoleSelectionModal';
 
 const SignIn = ({ isOpen, onClose }) => {
     const [isConnected, setIsConnected] = useState(false);
@@ -10,10 +11,17 @@ const SignIn = ({ isOpen, onClose }) => {
         const checkMetaMaskConnection = async () => {
             const provider = await detectEthereumProvider();
             if (provider) {
-                // Check if MetaMask is connected
                 const accounts = await provider.request({ method: 'eth_accounts' });
                 if (accounts.length > 0) {
                     setIsConnected(true);
+                    // Simpan status koneksi di cookies
+                    Cookies.set('isMetaMaskConnected', 'true', { expires: 7 });
+                } else {
+                    // Cek cookies untuk status koneksi
+                    const connected = Cookies.get('isMetaMaskConnected');
+                    if (connected) {
+                        setIsConnected(true);
+                    }
                 }
             }
         };
@@ -29,6 +37,8 @@ const SignIn = ({ isOpen, onClose }) => {
                 setIsConnected(true);
                 onClose(); // Tutup modal SignIn
                 setShowRoleModal(true); // Tampilkan modal role
+                // Simpan status koneksi di cookies
+                Cookies.set('isMetaMaskConnected', 'true', { expires: 7 });
             } else {
                 alert("Please connect to MetaMask first.");
             }
@@ -78,8 +88,8 @@ const SignIn = ({ isOpen, onClose }) => {
                                     ✖
                                 </button>
                             </div>
-                            <h1 className="text-center text-black  text-2xl font-bold mb-2">Sign In</h1>
-                            <p className="text-black  text-xs text-center">
+                            <h1 className="text-center text-black text-2xl font-bold mb-2">Sign In</h1>
+                            <p className="text-black text-xs text-center">
                                 Klik tombol "Lanjutkan" untuk melanjutkan ke dashboard pengguna, pastikan akun anda sudah terdaftar dan terkoneksi.
                             </p>
 
